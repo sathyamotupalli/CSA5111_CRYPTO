@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char text[100], enc[100],dec[100],ch;
+    int k;
+    printf("Enter the word: ");
+    scanf("%s", text);
+    printf("Enter the key (an integer): ");
+    scanf("%d", &k);
+    for (int i = 0; i < strlen(text); i++) {
+         ch = text[i];
+        if (ch >= 'a' && ch <= 'z') 
+		{
+            enc[i] = 'a' + (ch - 'a' + k) % 26;
+        } else if (ch >= 'A' && ch <= 'Z') {
+            enc[i] = 'A' + (ch - 'A' + k) % 26;
+        } else {
+           
+            enc[i] = ch;
+        }
+    }
+    for (int i = 0; i < strlen(enc); i++) {
+         ch = enc[i];
+
+        if (ch >= 'a' && ch <= 'z') 
+		{
+            dec[i] = 'a' + (ch - 'a' - k) % 26;
+        } else if (ch >= 'A' && ch <= 'Z') {
+            dec[i] = 'A' + (ch - 'A' - k) % 26;
+        } else {
+           
+            dec[i] = ch;
+        }
+    }
+    printf("Encrypted message: %s\n", enc);
+	printf("decrypted message: %s\n", dec);
+    return 0;
+}
