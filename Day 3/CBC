@@ -1,0 +1,40 @@
+from Crypto.Cipher import DES3
+from Crypto.Random import get_random_bytes
+
+# Initialization Vector (IV)
+def generate_random_iv(block_size):
+    return get_random_bytes(block_size)
+
+# Padding for the last block
+def pad(data, block_size):
+    padding_length = block_size - (len(data) % block_size)
+    padding = bytes([padding_length] * padding_length)
+    return data + padding
+
+# CBC Mode Encryption with 3DES
+def cbc_encrypt(plaintext, key, iv):
+    block_size = 8  # 3DES block size in bytes
+
+    cipher = DES3.new(key, DES3.MODE_ECB)
+
+    plaintext = pad(plaintext, block_size)
+
+    ciphertext = b""
+    previous_block = iv
+
+    for i in range(0, len(plaintext), block_size):
+        block = plaintext[i:i + block_size]
+        xored_block = bytes([b1 ^ b2 for b1, b2 in zip(block, previous_block)])
+        encrypted_block = cipher.encrypt(xored_block)
+        ciphertext += encrypted_block
+        previous_block = encrypted_block
+
+    return ciphertext
+
+# Example usage:
+key = get_random_bytes(24)  # 3DES key
+iv = generate_random_iv(8)  # Initialization Vector
+plaintext = b"This is a secret message."
+
+ciphertext = cbc_encrypt(plaintext, key, iv)
+print("Ciphertext:", ciphertext)
