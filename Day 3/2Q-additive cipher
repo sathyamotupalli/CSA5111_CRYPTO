@@ -1,0 +1,58 @@
+import string
+
+# Function to calculate letter frequencies in a text
+def calculate_letter_frequencies(text):
+    frequencies = {}
+    total_letters = 0
+
+    for char in text:
+        if char.isalpha():
+            char = char.lower()
+            frequencies[char] = frequencies.get(char, 0) + 1
+            total_letters += 1
+
+    # Calculate frequencies as percentages
+    for char, count in frequencies.items():
+        frequencies[char] = count / total_letters * 100
+
+    return frequencies
+
+# Function to decrypt ciphertext using a specific key
+def decrypt_with_key(ciphertext, key):
+    decrypted_text = ""
+    for char in ciphertext:
+        if char.isalpha():
+            shift = key % 26
+            if char.islower():
+                decrypted_char = chr(((ord(char) - ord('a') - shift) % 26) + ord('a'))
+            else:
+                decrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
+            decrypted_text += decrypted_char
+        else:
+            decrypted_text += char
+    return decrypted_text
+
+# Function to perform a letter frequency attack
+def letter_frequency_attack(ciphertext, top_n=10):
+    frequencies = calculate_letter_frequencies(ciphertext)
+    sorted_frequencies = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+
+    possible_plaintexts = []
+    for i in range(top_n):
+        most_common_letter = sorted_frequencies[i][0]
+        key_guess = ord(most_common_letter) - ord('e')  # Assuming 'e' is the most common letter in English
+
+        decrypted_text = decrypt_with_key(ciphertext, key_guess)
+        possible_plaintexts.append(decrypted_text)
+
+    return possible_plaintexts
+
+if __name__ == "__main__":
+    ciphertext = "Lwklv D whvw phvvdjh whvw rxu eorjrphs. Jxu whvw jdv tjqh phvvdjh lwklv! Tqf phvvdjh jdvq fvkz dfoq mjhhrxgj."
+
+    top_n = 10  # Specify how many possible plaintexts you want
+
+    possible_plaintexts = letter_frequency_attack(ciphertext, top_n)
+
+    for i, plaintext in enumerate(possible_plaintexts, 1):
+        print(f"Possible Plaintext {i}:\n{plaintext}")
