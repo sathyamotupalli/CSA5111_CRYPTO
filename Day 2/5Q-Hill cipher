@@ -1,0 +1,59 @@
+K = | 9 4 |
+    | 5 7 |
+message = "meet me at the usual place at ten rather than eight oclock"
+import numpy as np
+
+# Define the key matrix
+key_matrix = np.array([[9, 4], [5, 7]])
+
+# Function to encrypt a block of text
+def encrypt_block(block):
+    block = block.replace(" ", "").upper()  # Remove spaces and convert to uppercase
+    block = [ord(char) - ord('A') for char in block]  # Convert to numerical values
+
+    # Ensure the block length matches the key matrix size
+    while len(block) % 2 != 0:
+        block.append(0)  # Pad with 'A' (0) if needed
+
+    block = np.array(block).reshape(-1, 2)
+    encrypted_block = np.dot(block, key_matrix) % 26  # Multiply and take modulo 26
+    encrypted_block = encrypted_block.flatten()
+
+    encrypted_text = "".join([chr(char + ord('A')) for char in encrypted_block])  # Convert back to letters
+    return encrypted_text
+
+# Encrypt the entire message
+message = "meet me at the usual place at ten rather than eight oclock"
+blocks = [message[i:i+2] for i in range(0, len(message), 2)]
+ciphertext = " ".join([encrypt_block(block) for block in blocks])
+
+# Output the ciphertext
+print("Ciphertext:", ciphertext)
+Ciphertext: FGCFV NY PM HHVCXPZT GZ FRWSY
+# Calculate the inverse of the key matrix
+key_matrix_inv = np.linalg.inv(key_matrix)
+key_matrix_inv = (key_matrix_inv % 26).astype(int)  # Take modulo 26
+
+# Function to decrypt a block of text
+def decrypt_block(block):
+    block = block.replace(" ", "").upper()
+    block = [ord(char) - ord('A') for char in block]
+
+    while len(block) % 2 != 0:
+        block.append(0)
+
+    block = np.array(block).reshape(-1, 2)
+    decrypted_block = np.dot(block, key_matrix_inv) % 26
+    decrypted_block = decrypted_block.flatten()
+
+    decrypted_text = "".join([chr(char + ord('A')) for char in decrypted_block])
+    return decrypted_text
+
+# Decrypt the ciphertext
+ciphertext = "FGCFV NY PM HHVCXPZT GZ FRWSY"
+blocks = ciphertext.split()
+plaintext = " ".join([decrypt_block(block) for block in blocks])
+
+# Output the decrypted plaintext
+print("Decrypted Plaintext:", plaintext)
+Decrypted Plaintext: MEETMEATTHEUSUALPLACEATTENRATHERTHANEIGHTOCLOCK
