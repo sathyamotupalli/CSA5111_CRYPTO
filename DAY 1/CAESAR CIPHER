@@ -1,0 +1,53 @@
+ #include <stdio.h>
+
+// Function to calculate the modular inverse of 'a' mod m
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1) {
+            return x;
+        }
+    }
+    return -1; // If no modular inverse exists
+}
+
+// Function to encrypt using the affine Caesar cipher
+char encrypt(int a, int b, char plaintext) {
+    if (isalpha(plaintext)) {
+        if (islower(plaintext)) {
+            return (char)((a * (plaintext - 'a') + b) % 26 + 'a');
+        } else if (isupper(plaintext)) {
+            return (char)((a * (plaintext - 'A') + b) % 26 + 'A');
+        }
+    }
+    return plaintext; // Return unchanged if not a letter
+}
+
+int main() {
+    int a, b;
+    printf("Enter the value of 'a' (allowed values: 1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23): ");
+    scanf("%d", &a);
+    if (a < 1 || a > 25 || (a % 2 == 0) || a % 13 == 0) {
+        printf("Invalid value of 'a'.\n");
+        return 1;
+    }
+    
+    printf("Enter the value of 'b' (must be coprime to 26): ");
+    scanf("%d", &b);
+    if (b < 1 || b > 25 || modInverse(b, 26) == -1) {
+        printf("Invalid value of 'b'. It must be coprime to 26.\n");
+        return 1;
+    }
+
+    char plaintext[100];
+    printf("Enter the plaintext: ");
+    scanf(" %[^\n]", plaintext);
+
+    printf("Encrypted text: ");
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        printf("%c", encrypt(a, b, plaintext[i]));
+    }
+    printf("\n");
+
+    return 0;
+}
