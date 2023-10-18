@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <ctype.h>
+
+// Function to encrypt a character using the Caesar cipher
+char encryptChar(char ch, int k) {
+    if (isalpha(ch)) {
+        char base = islower(ch) ? 'a' : 'A';
+        return (char)(((ch - base + k) % 26) + base);
+    }
+    return ch; // Return unchanged if not a letter
+}
+
+int main() {
+    int k;
+    printf("Enter the value of 'k' (1-25): ");
+    scanf("%d", &k);
+    
+    if (k < 1 || k > 25) {
+        printf("Invalid value of 'k'. Please enter a value between 1 and 25.\n");
+        return 1;
+    }
+
+    char plaintext[100];
+    printf("Enter the plaintext: ");
+    scanf(" %[^\n]", plaintext);
+
+    printf("Encrypted text: ");
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        printf("%c", encryptChar(plaintext[i], k));
+    }
+    printf("\n");
+
+    return 0;
+}
