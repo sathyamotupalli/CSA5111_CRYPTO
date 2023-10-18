@@ -1,0 +1,80 @@
+def prepare_playfair_matrix(key):
+    # Initialize the matrix with empty spaces
+    matrix = [['' for _ in range(5)] for _ in range(5)]
+    key = key.upper().replace("J", "I")  # Convert to uppercase and replace 'J' with 'I'
+
+    # Fill the matrix with the key
+    key_chars = set()
+    row, col = 0, 0
+
+    for char in key:
+        if char not in key_chars:
+            matrix[row][col] = char
+            key_chars.add(char)
+            col += 1
+            if col == 5:
+                col = 0
+                row += 1
+
+    # Fill the remaining matrix with the alphabet
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    for char in alphabet:
+        if char not in key_chars:
+            matrix[row][col] = char
+            key_chars.add(char)
+            col += 1
+            if col == 5:
+                col = 0
+                row += 1
+
+    return matrix
+
+def find_coordinates(matrix, char):
+    for row in range(5):
+        if char in matrix[row]:
+            return row, matrix[row].index(char)
+
+def encrypt_playfair(plain_text, matrix):
+    def encode_digraph(digraph):
+        a, b = digraph
+        row_a, col_a = find_coordinates(matrix, a)
+        row_b, col_b = find_coordinates(matrix, b)
+
+        if row_a == row_b:
+            return matrix[row_a][(col_a + 1) % 5] + matrix[row_b][(col_b + 1) % 5]
+        elif col_a == col_b:
+            return matrix[(row_a + 1) % 5][col_a] + matrix[(row_b + 1) % 5][col_b]
+        else:
+            return matrix[row_a][col_b] + matrix[row_b][col_a]
+
+    plain_text = plain_text.upper().replace("J", "I")  # Convert to uppercase and replace 'J' with 'I'
+    plain_text = plain_text.replace(" ", "")  # Remove spaces
+    encoded_text = ""
+    i = 0
+
+    while i < len(plain_text):
+        if i == len(plain_text) - 1:
+            digraph = plain_text[i] + 'X'
+            i += 1
+        elif plain_text[i] == plain_text[i + 1]:
+            digraph = plain_text[i] + 'X'
+            i += 1
+        else:
+            digraph = plain_text[i:i + 2]
+            i += 2
+
+        encoded_text += encode_digraph(digraph)
+
+    return encoded_text
+
+# Example usage:
+key = "MFHIJKUNOPQZVWXYELARGDSTBC"  # Playfair key
+message = "Must see you over Cadogan West. Coming at once."
+
+playfair_matrix = prepare_playfair_matrix(key)
+encrypted_message = encrypt_playfair(message, playfair_matrix)
+
+print("Playfair Matrix:")
+for row in playfair_matrix:
+    print(" ".join(row))
+print("\nEncrypted Message:", encrypted_message)
