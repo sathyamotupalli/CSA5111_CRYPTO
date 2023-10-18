@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+// Function to perform monoalphabetic substitution encryption with a key
+char monoalphabeticEncrypt(char ch, char key) {
+    if (isalpha(ch)) {
+        char base = islower(ch) ? 'a' : 'A';
+        int shift = tolower(key) - 'a'; // Determine the shift based on the key
+        return (char)(((ch - base + shift) % 26) + base);
+    }
+    return ch; // Return unchanged if not a letter
+}
+
+int main() {
+    char key[100];
+    char plaintext[100];
+
+    printf("Enter the encryption key (a word or phrase): ");
+    scanf(" %[^\n]", key);
+
+    printf("Enter the plaintext: ");
+    scanf(" %[^\n]", plaintext);
+
+    int keyLength = strlen(key);
+    int keyIndex = 0;
+
+    printf("Encrypted text: ");
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        char currentKey = key[keyIndex % keyLength]; // Cycle through the key
+        printf("%c", monoalphabeticEncrypt(plaintext[i], currentKey));
+
+        if (isalpha(plaintext[i])) {
+            keyIndex++;
+        }
+    }
+
+    printf("\n");
+
+    return 0;
+}
