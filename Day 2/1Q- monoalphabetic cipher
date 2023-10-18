@@ -1,0 +1,53 @@
+def generate_cipher(keyword):
+    # Create an empty dictionary to store the mapping
+    cipher_dict = {}
+
+    # Remove duplicates from the keyword to avoid issues with repeated letters
+    keyword = "".join(dict.fromkeys(keyword))
+
+    # Fill the dictionary with the keyword
+    for i in range(len(keyword)):
+        cipher_dict[keyword[i]] = chr(65 + i)
+
+    # Fill in the remaining unused letters
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for letter in alphabet:
+        if letter not in cipher_dict:
+            for k, v in cipher_dict.items():
+                if v == "":  # If the slot is empty, fill it with the unused letter
+                    cipher_dict[k] = letter
+                    break
+
+    # Convert the dictionary to a string
+    cipher_sequence = ''.join([cipher_dict[letter] for letter in alphabet])
+
+    return cipher_sequence
+
+def encrypt(plain_text, cipher_sequence):
+    # Create a dictionary for the reverse lookup
+    reverse_dict = {cipher_sequence[i]: chr(65 + i) for i in range(26)}
+
+    # Encrypt the plaintext
+    cipher_text = ''.join([reverse_dict[letter] for letter in plain_text])
+
+    return cipher_text
+
+def decrypt(cipher_text, cipher_sequence):
+    # Decrypt the ciphertext
+    plain_text = ''.join([cipher_sequence[ord(letter) - 65] for letter in cipher_text])
+
+    return plain_text
+
+# Example usage:
+keyword = "CIPHER"
+cipher_sequence = generate_cipher(keyword)
+
+plaintext = "HELLO"
+cipher_text = encrypt(plaintext, cipher_sequence)
+decrypted_text = decrypt(cipher_text, cipher_sequence)
+
+print("Keyword:", keyword)
+print("Generated Cipher Sequence:", cipher_sequence)
+print("Original Text:", plaintext)
+print("Encrypted Text:", cipher_text)
+print("Decrypted Text:", decrypted_text)
