@@ -1,0 +1,63 @@
+def prepare_key(key):
+    key = key.upper().replace("J", "I")  # Convert to uppercase and replace 'J' with 'I'
+    key_set = set(key)
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+
+    # Create the Playfair matrix
+    matrix = []
+    for letter in key:
+        if letter not in matrix:
+            matrix.append(letter)
+
+    for letter in alphabet:
+        if letter not in matrix:
+            matrix.append(letter)
+
+    return matrix
+
+def decode_playfair(ciphertext, key_matrix):
+    def find_coordinates(matrix, char):
+        for row in range(5):
+            if char in matrix[row]:
+                return row, matrix[row].index(char)
+        return None
+
+    def decode_digraph(digraph, matrix):
+        a, b = digraph
+        row_a, col_a = find_coordinates(matrix, a)
+        row_b, col_b = find_coordinates(matrix, b)
+
+        if row_a == row_b:
+            return matrix[row_a][(col_a - 1) % 5] + matrix[row_b][(col_b - 1) % 5]
+        elif col_a == col_b:
+            return matrix[(row_a - 1) % 5][col_a] + matrix[(row_b - 1) % 5][col_b]
+        else:
+            return matrix[row_a][col_b] + matrix[row_b][col_a]
+
+    ciphertext = ciphertext.upper().replace("J", "I")  # Convert to uppercase and replace 'J' with 'I'
+    plaintext = ""
+    i = 0
+
+    while i < len(ciphertext):
+        if i == len(ciphertext) - 1:
+            digraph = ciphertext[i] + 'X'
+            i += 1
+        elif ciphertext[i] == ciphertext[i + 1]:
+            digraph = ciphertext[i] + 'X'
+            i += 1
+        else:
+            digraph = ciphertext[i:i + 2]
+            i += 2
+
+        plaintext += decode_digraph(digraph, key_matrix)
+
+    return plaintext
+
+# Example usage:
+key = "KEYWORD"  # Replace with the actual Playfair key
+ciphertext = "ENCRYPTEDTEXT"  # Replace with the actual Playfair-encoded message
+
+key_matrix = prepare_key(key)
+decoded_message = decode_playfair(ciphertext, key_matrix)
+
+print("Decoded Message:", decoded_message)
