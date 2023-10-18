@@ -1,0 +1,51 @@
+#include <stdio.h>
+
+// Simulate encryption using XOR
+void encrypt(char* plaintext, char* key, char* ciphertext, int block_size) {
+    for (int i = 0; i < block_size; i++) {
+        ciphertext[i] = plaintext[i] ^ key[i];
+    }
+}
+
+// Simulate decryption using XOR
+void decrypt(char* ciphertext, char* key, char* plaintext, int block_size) {
+    for (int i = 0; i < block_size; i++) {
+        plaintext[i] = ciphertext[i] ^ key[i];
+    }
+}
+
+int main() {
+    char plaintext_block[4] = {0x01, 0x02, 0x03, 0x04};
+    char key[4] = {0x0A, 0x0B, 0x0C, 0x0D};
+    char ciphertext_block_ecb[4];
+    char ciphertext_block_cbc[4];
+    char iv[4] = {0x05, 0x06, 0x07, 0x08};
+
+    printf("Plaintext Block:  0x01 0x02 0x03 0x04\n");
+    printf("Key:             0x0A 0x0B 0x0C 0x0D\n");
+    printf("Initialization Vector: 0x05 0x06 0x07 0x08\n");
+
+    // ECB Encryption
+    encrypt(plaintext_block, key, ciphertext_block_ecb, 4);
+    printf("ECB Mode:\n");
+    printf("Ciphertext Block: ");
+    for (int i = 0; i < 4; i++) {
+        printf("0x%02X ", ciphertext_block_ecb[i]);
+    }
+    printf("\n");
+
+    // CBC Encryption
+    char previous_cipher_block[4] = {0x05, 0x06, 0x07, 0x08}; // IV for the first block
+    for (int i = 0; i < 4; i++) {
+        plaintext_block[i] ^= previous_cipher_block[i];
+    }
+    encrypt(plaintext_block, key, ciphertext_block_cbc, 4);
+    printf("CBC Mode:\n");
+    printf("Ciphertext Block: ");
+    for (int i = 0; i < 4; i++) {
+        printf("0x%02X ", ciphertext_block_cbc[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
