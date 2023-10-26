@@ -1,0 +1,41 @@
+# Function to find the greatest common divisor (GCD) using Euclidean algorithm
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+# Function to find the multiplicative inverse of a modulo m using extended Euclidean algorithm
+def extended_gcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = extended_gcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+# Function to calculate the modular multiplicative inverse of a modulo m
+def mod_inverse(a, m):
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        raise ValueError("The multiplicative inverse does not exist")
+    else:
+        return x % m
+
+# Given public key values
+e = 31
+n = 3599
+
+# Step 1: Find prime factors p and q
+# Let's use trial-and-error to find p and q
+for p in range(2, n):
+    if n % p == 0:
+        q = n // p
+        break
+
+# Step 2: Calculate f(n)
+fn = (p - 1) * (q - 1)
+
+# Step 3: Find the private key (d) using the extended Euclidean algorithm
+d = mod_inverse(e, fn)
+
+# The private key (d) is now found
+print("Private Key (d):", d)
