@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/dsa.h>
+#include <openssl/err.h>
+
+// Length of DSA parameters (change based on the specific DSA parameters you're using)
+#define DSA_KEY_LENGTH 2048
+
+int main() {
+    DSA *dsa = NULL;
+    unsigned char message[] = "This is a message to be signed.";
+
+    // Initialize DSA parameters
+    dsa = DSA_generate_parameters(DSA_KEY_LENGTH, NULL, 0, NULL, NULL, NULL, NULL);
+    if (dsa == NULL) {
+        ERR_print_errors_fp(stderr);
+        exit(1);
+    }
+
+    // Generate DSA key pair
+    if (!DSA_generate_key(dsa)) {
+        ERR_print_errors_fp(stderr);
+        DSA_free(dsa);
+        exit(1);
+    }
+
+    // First Signature
+    DSA_SIG *signature1 = DSA_do_sign(message, strlen((char *)message), dsa);
+    if (signature1 == NULL) {
+        ERR_print_errors_fp(stderr);
+        DSA_free(dsa);
+        exit(1);
+    }
+
+    // Verify the first signature
+    int verify1 = DSA_do_verify(message, strlen((char *)message), signature1, dsa);
+    if (verify1 == 1) {
+        printf("Signature 1 is valid.\n");
+    } else {
+        printf("Signature 1 is not valid.\n");
+    }
+
+    // Second Signature with a different k value
+    DSA_SIG *signature2 = DSA_do_sign(message, strlen((char *)message), dsa);
+    if (signature2 == NULL) {
+        ERR_print_errors_fp(stderr);
+        DSA_free(dsa);
+        exit(1);
+    }
+
+    // Verify the second signature
+    int verify2 = DSA_do_verify(message, strlen((char *)message), signature2, dsa);
+    if (verify2 == 1) {
+        printf("Signature 2 is valid.\n");
+    } else {
+        printf("Signature 2 is not valid.\n");
+    }
+
+    // Cleanup
+    DSA_free(dsa);
+    DSA_SIG_free(signature1);
+    DSA_SIG_free(signature2);
+
+    return 0;
+}
