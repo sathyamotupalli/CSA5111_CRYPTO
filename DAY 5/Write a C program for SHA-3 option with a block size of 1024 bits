@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+#define STATE_SIZE 5
+
+// A simplified function to print the state matrix
+void printState(uint64_t state[STATE_SIZE][STATE_SIZE]) {
+    for (int i = 0; i < STATE_SIZE; i++) {
+        for (int j = 0; j < STATE_SIZE; j++) {
+            printf("%016lx ", state[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// A function to simulate the SHA-3 state filling process
+void fillState(uint64_t state[STATE_SIZE][STATE_SIZE]) {
+    // Set this to the number of rounds you want to simulate
+    int numRounds = 24; // For a 1600-bit state and Keccak-f[1600], this should be 24 rounds
+
+    for (int round = 0; round < numRounds; round++) {
+        // Simulate a round of SHA-3 permutation (Keccak-f)
+        // In practice, this involves a complex set of bitwise operations and non-linear transformations
+        // For simplicity, we'll just set some non-zero values in the state matrix
+        state[round % STATE_SIZE][round % STATE_SIZE] = 1; // Set a non-zero value
+        printState(state);
+    }
+}
+
+int main() {
+    uint64_t state[STATE_SIZE][STATE_SIZE] = {0}; // Initialize the state with zeros
+
+    printf("Initial state:\n");
+    printState(state);
+
+    fillState(state);
+
+    return 0;
+}
