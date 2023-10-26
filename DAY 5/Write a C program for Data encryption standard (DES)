@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <openssl/des.h>
+
+int main() {
+    DES_cblock key;
+    DES_key_schedule keysched;
+
+    // 64-bit key (56 bits with 8 bits of parity)
+    char raw_key[] = "0123456789ABCDEF";  // Replace with your key
+
+    // Initialize key with parity bits
+    DES_set_key_checked(&key, &keysched);
+
+    // Input plaintext (64 bits)
+    DES_cblock plaintext;
+    DES_cblock ciphertext;
+
+    // Replace the following line with your actual plaintext
+    char raw_plaintext[] = "0123456789ABCDEF";
+
+    // Copy plaintext to DES_cblock
+    memcpy(plaintext, raw_plaintext, 8);
+
+    // Encrypt the plaintext
+    DES_ecb_encrypt(&plaintext, &ciphertext, &keysched, DES_ENCRYPT);
+
+    // Display the ciphertext
+    printf("Plaintext:  %s\n", raw_plaintext);
+    printf("Ciphertext: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%02X", ciphertext[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
