@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+#include <openssl/aes.h>
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+
+// AES encryption
+void aes_encrypt(const unsigned char *plaintext, const unsigned char *key, unsigned char *ciphertext) {
+    AES_KEY aes_key;
+    AES_set_encrypt_key(key, 128, &aes_key);
+    AES_encrypt(plaintext, ciphertext, &aes_key);
+}
+
+// AES decryption
+void aes_decrypt(const unsigned char *ciphertext, const unsigned char *key, unsigned char *plaintext) {
+    AES_KEY aes_key;
+    AES_set_decrypt_key(key, 128, &aes_key);
+    AES_decrypt(ciphertext, plaintext, &aes_key);
+}
+
+int main() {
+    unsigned char plaintext[] = "HELLO"; // Replace with your message
+    unsigned char key[16] = "EncryptionKey123"; // Replace with a secure key
+    unsigned char ciphertext[16];
+    unsigned char decrypted_text[16];
+
+    // Encrypt the message using AES
+    aes_encrypt(plaintext, key, ciphertext);
+
+    printf("Original message: %s\n", plaintext);
+    printf("Encrypted message: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02x", ciphertext[i]);
+    }
+    printf("\n");
+
+    // Decrypt the ciphertext using AES
+    aes_decrypt(ciphertext, key, decrypted_text);
+
+    printf("Decrypted message: %s\n", decrypted_text);
+
+    return 0;
+}
