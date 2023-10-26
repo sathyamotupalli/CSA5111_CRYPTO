@@ -1,0 +1,17 @@
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
+# Recipient's public key (n and e)
+n = 123456789  # Replace with the actual value of n
+e = 65537     # Replace with the actual value of e
+
+# Data to be encrypted
+data_to_encrypt = b"Hello, this is some sensitive information."
+
+# Create an RSA public key object
+public_key = rsa.RSAPublicNumbers(e, n).public_key()
+
+# Encrypt the data using the public key
+encrypted_data = public_key.encrypt(data_to_encrypt, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+
+# The 'encrypted_data' can be sent to the recipient, who has the private key to decrypt it.
