@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdint.h>
+
+#define BLOCK_SIZE 16  // Change to 8 for a 64-bit block size
+
+void cmac_subkey_generation(const uint8_t* key, uint8_t* subkey1, uint8_t* subkey2) {
+    uint8_t zero_block[BLOCK_SIZE] = {0};
+    uint8_t subkey[BLOCK_SIZE] = {0};
+
+    // Perform block cipher encryption on the zero block using the key
+    // You should use a proper block cipher library for this, like OpenSSL or another crypto library.
+    // Here, we assume a placeholder block cipher operation.
+
+    // For simplicity, we'll just copy the result to the subkey.
+    // Replace this with actual block cipher encryption.
+    memcpy(subkey, zero_block, BLOCK_SIZE);
+
+    // Left shift subkey
+    for (int i = 0; i < BLOCK_SIZE - 1; i++) {
+        subkey[i] = (subkey[i] << 1) | (subkey[i + 1] >> 7);
+    }
+    subkey[BLOCK_SIZE - 1] <<= 1;
+
+    // If the most significant bit of the original subkey is 1, XOR with a constant
+    // This constant depends on the block size:
+    if (subkey[0] & 0x80) {
+        if (BLOCK_SIZE == 16) {
+            subkey[BLOCK_SIZE - 1] ^= 0x87;
+        } else if (BLOCK_SIZE == 8) {
+            subkey[BLOCK_SIZE - 1] ^= 0x1B;
+        }
+    }
+
+    // Copy subkey to subkey1
+    memcpy(subkey1, subkey, BLOCK_SIZE);
+
+    // Left shift subkey again
+    for (int i = 0; i < BLOCK_SIZE - 1; i++) {
+        subkey[i] = (subkey[i] << 1) | (subkey[i + 1] >> 7);
+    }
+    subkey[BLOCK_SIZE - 1] <<= 1;
+
+    // If the most significant bit of the original subkey is 1, XOR with a constant
+    // This constant depends on the block size:
+    if (subkey[0] & 0x80) {
+        if (BLOCK_SIZE == 16) {
+            subkey[BLOCK_SIZE - 1] ^= 0x87;
+        } else if (BLOCK_SIZE == 8) {
+            subkey[BLOCK_SIZE - 1] ^= 0x1B;
+        }
+    }
+
+    // Copy subkey to subkey2
+    memcpy(subkey2, subkey, BLOCK_SIZE);
+}
+
+int main() {
+    uint8_t key[BLOCK_SIZE] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x97, 0xe2, 0x4c, 0x3b, 0x14, 0xc6};
+    uint8_t subkey1[BLOCK_SIZE];
+    uint8_t subkey2[BLOCK_SIZE];
+
+    cmac_subkey_generation(key, subkey1, subkey2);
+
+    printf("Subkey 1:\n");
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        printf("%02x ", subkey1[i]);
+    }
+    printf("\n");
+
+    printf("Subkey 2:\n");
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        printf("%02x ", subkey2[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
