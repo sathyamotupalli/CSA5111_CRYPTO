@@ -1,0 +1,71 @@
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+
+# Block size (in bytes) for AES
+block_size = 16
+
+# ECB Mode
+def ecb_encrypt(plaintext, key):
+    cipher = AES.new(key, AES.MODE_ECB)
+    return cipher.encrypt(plaintext)
+
+def ecb_decrypt(ciphertext, key):
+    cipher = AES.new(key, AES.MODE_ECB)
+    return cipher.decrypt(ciphertext)
+
+# CBC Mode
+def cbc_encrypt(plaintext, key, iv):
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    return cipher.encrypt(plaintext)
+
+def cbc_decrypt(ciphertext, key, iv):
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    return cipher.decrypt(ciphertext)
+
+# CFB Mode
+def cfb_encrypt(plaintext, key, iv):
+    cipher = AES.new(key, AES.MODE_CFB, iv)
+    return cipher.encrypt(plaintext)
+
+def cfb_decrypt(ciphertext, key, iv):
+    cipher = AES.new(key, AES.MODE_CFB, iv)
+    return cipher.decrypt(ciphertext)
+
+# Padding
+def pad(text):
+    pad_length = block_size - len(text) % block_size
+    padding = bytes([pad_length] * pad_length)
+    return text + padding
+
+def unpad(text):
+    pad_length = text[-1]
+    return text[:-pad_length]
+
+# Example usage
+key = get_random_bytes(16)
+iv = get_random_bytes(16)
+plaintext = b"Your plaintext message"
+
+# Ensure plaintext is padded
+padded_plaintext = pad(plaintext)
+
+# ECB
+ecb_encrypted = ecb_encrypt(padded_plaintext, key)
+ecb_decrypted = unpad(ecb_decrypt(ecb_encrypted, key))
+
+# CBC
+cbc_encrypted = cbc_encrypt(padded_plaintext, key, iv)
+cbc_decrypted = unpad(cbc_decrypt(cbc_encrypted, key, iv))
+
+# CFB
+cfb_encrypted = cfb_encrypt(padded_plaintext, key, iv)
+cfb_decrypted = unpad(cfb_decrypt(cfb_encrypted, key, iv))
+
+print("ECB Encrypted:", ecb_encrypted)
+print("ECB Decrypted:", ecb_decrypted)
+print("CBC Encrypted:", cbc_encrypted)
+print("CBC Decrypted:", cbc_decrypted)
+print("CFB Encrypted:", cfb_encrypted)
+print("CFB Decrypted:", cfb_decrypted)
+
+      
