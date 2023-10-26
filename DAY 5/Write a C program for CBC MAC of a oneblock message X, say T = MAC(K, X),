@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+#include <openssl/evp.h>
+
+int main() {
+    unsigned char key[16] = "SecretKey1234567";
+    unsigned char plaintext[16] = "This is a message";
+    unsigned char iv[16] = {0};  // Initialization Vector
+
+    EVP_CIPHER_CTX *ctx;
+
+    OpenSSL_add_all_algorithms();
+    ERR_load_crypto_strings();
+
+    ctx = EVP_CIPHER_CTX_new();
+
+    EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv);
+
+    // Encrypt the plaintext (one block)
+    int ciphertext_len;
+    EVP_EncryptUpdate(ctx, NULL, &ciphertext_len, plaintext, 16);
+
+    unsigned char mac[16];  // CBC-MAC output
+    EVP_EncryptFinal_ex(ctx, mac, &ciphertext_len);
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    printf("CBC-MAC: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02x", mac[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
